@@ -20,6 +20,7 @@ namespace VRisingServerApiPlugin.command;
 [HarmonyPatch(typeof(ServerWebAPISystem))]
 public class ServerWebAPISystemPatches
 {
+
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -36,17 +37,19 @@ public class ServerWebAPISystemPatches
             return;
         }
         
-        __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
-            new Regex("^/v-rising-server-api/connected-players$"),
-            "GET",
-            BuildAdapter(_ => PlayersCommands.GetConnectedPlayers())
-            ));
+        PlayersCommands.getCommands()
+            .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
+                new Regex(Command.Pattern),
+                Command.Method,
+                BuildAdapter(Command.commandHandler)
+            )));
         
-        __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
-            new Regex("^/v-rising-server-api/clans$"),
-            "GET",
-            BuildAdapter(_ => ClansCommands.GetAllClans())
-            ));
+        ClansCommands.getCommands()
+            .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
+                new Regex(Command.Pattern),
+                Command.Method,
+                BuildAdapter(Command.commandHandler)
+            )));
     }
 
     private static HttpServiceReceiveThread.RequestHandler BuildAdapter(

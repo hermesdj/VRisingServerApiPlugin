@@ -1,10 +1,26 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using VRisingServerApiPlugin.command;
 
 namespace VRisingServerApiPlugin.clans;
 
-public class ClansCommands
+public abstract class ClansCommands : CommandHandler
 {
-    public static ListClanResponse GetAllClans()
+    public static List<Command> getCommands()
+    {
+        var commands = new List<Command>
+        {
+            new(
+                Pattern: "^/v-rising-server-api/clans$",
+                Method: "GET",
+                commandHandler: (_) => GetAllClans()
+            )
+        };
+
+        return commands;
+    }
+
+    private static ListClanResponse GetAllClans()
     {
         var clans = ServerWorld.GetAllClans()
             .Select(ClanUtils.Convert)

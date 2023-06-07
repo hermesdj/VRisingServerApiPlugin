@@ -35,22 +35,34 @@ public static class ServerWorld
         return null;
     }
 
-    public static List<Player> GetAllPlayerCharacters()
+    private static Player ConvertEntityToPlayer(Entity userEntity)
+    {
+        var user = EntityManager.GetComponentData<User>(userEntity);
+        return new Player(user, 
+            userEntity,
+            EntityManager.GetComponentData<PlayerCharacter>(user.LocalCharacter._Entity),
+            user.LocalCharacter._Entity);
+    }
+
+    public static IEnumerable<Player> GetAllPlayerCharacters()
     {
         return ListUtils.Convert(
             EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
                 .ToEntityArray(Allocator.Temp)
             )
             .Where(userEntity => EntityManager.GetComponentData<User>(userEntity).LocalCharacter._Entity != Entity.Null)
-            .Select(userEntity =>
-            {
-                var user = EntityManager.GetComponentData<User>(userEntity);
-                return new Player(user, 
-                    userEntity,
-                    EntityManager.GetComponentData<PlayerCharacter>(user.LocalCharacter._Entity),
-                    user.LocalCharacter._Entity);
-            })
+            .Select(ConvertEntityToPlayer)
                 .ToList();
+    }
+
+    public static Player? GetPlayer(int userIndex)
+    {
+        Entity? userEntity = ListUtils
+            .Convert(EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
+                .ToEntityArray(Allocator.Temp))
+            .FirstOrDefault(userEntity => EntityManager.GetComponentData<User>(userEntity).Index == userIndex);
+
+        return userEntity.HasValue ? ConvertEntityToPlayer(userEntity.Value) : null;
     }
 
     public static List<ClanTeam> GetAllClans()

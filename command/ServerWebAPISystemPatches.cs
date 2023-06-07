@@ -41,14 +41,14 @@ public class ServerWebAPISystemPatches
             .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
                 new Regex(Command.Pattern),
                 Command.Method,
-                BuildAdapter(Command.commandHandler)
+                BuildAdapter(_ => Command.commandHandler(_))
             )));
         
         ClansCommands.getCommands()
             .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
                 new Regex(Command.Pattern),
                 Command.Method,
-                BuildAdapter(Command.commandHandler)
+                BuildAdapter(_ => Command.commandHandler(_))
             )));
     }
 

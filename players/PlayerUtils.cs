@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using ProjectM;
+using Entity = Unity.Entities.Entity;
 
 namespace VRisingServerApiPlugin.players;
 

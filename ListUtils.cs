@@ -22,4 +22,15 @@ public static class ListUtils
         }
         return _list;
     }
+
+    public static List<T> Convert<T>(NativeList<T> list) where T : unmanaged
+    {
+        var _list = new List<T>();
+        foreach (var entity in list)
+        {
+            _list.Add(entity);
+        }
+
+        return _list;
+    }
 }

@@ -1,10 +1,20 @@
-﻿using System;
-using Il2CppSystem.Net;
+﻿#nullable enable
+using System;
+using Il2CppSystem.Globalization;
+using VRisingServerApiPlugin.http;
 
 namespace VRisingServerApiPlugin.command;
 
-public readonly record struct Command(
-    string Pattern,
-    string Method,
-    Func<HttpListenerContext, object> commandHandler
-);
+public class Command
+{
+    public string Pattern { get; set; }
+    public string Method { get; set; }
+
+    public Func<HttpRequest, object> CommandHandler { get; set; }
+
+    public Command(string Pattern, string Method, Func<HttpRequest, object> CommandHandler){
+        this.Pattern = Pattern;
+        this.Method = Method;
+        this.CommandHandler = CommandHandler;
+    }
+}

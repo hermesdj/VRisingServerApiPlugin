@@ -1,4 +1,5 @@
 ﻿#nullable enable
+#nullable enable
 namespace VRisingServerApiPlugin.command;
 
 public class InternalServerError

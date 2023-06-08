@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using ProjectM;
 using ProjectM.Network;
 using Unity.Collections;
@@ -20,6 +19,8 @@ public static class ServerWorld
     private static readonly World Server = _server.Value;
 
     public static EntityManager EntityManager = Server.EntityManager;
+    public static PrefabCollectionSystem PrefabCollectionSystem = Server.GetExistingSystem<PrefabCollectionSystem>();
+    
     public static bool IsServer => Application.productName == "VRisingServer";
 
     private static World? GetWorld(string name)

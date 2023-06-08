@@ -8,5 +8,5 @@ public readonly record struct PlayerListApiResponse(
 );
     
 public readonly record struct PlayerApiResponse(
-    ApiPlayer? player
+    ApiPlayerDetails? player
 );

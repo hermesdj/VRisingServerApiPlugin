@@ -12,6 +12,7 @@ using Il2CppSystem.Text.RegularExpressions;
 using ProjectM;
 using ProjectM.Network;
 using VRisingServerApiPlugin.clans;
+using VRisingServerApiPlugin.http;
 using VRisingServerApiPlugin.players;
 using VRisingServerApiPlugin.query;
 
@@ -20,10 +21,9 @@ namespace VRisingServerApiPlugin.command;
 [HarmonyPatch(typeof(ServerWebAPISystem))]
 public class ServerWebAPISystemPatches
 {
-
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
@@ -41,24 +41,26 @@ public class ServerWebAPISystemPatches
             .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
                 new Regex(Command.Pattern),
                 Command.Method,
-                BuildAdapter(_ => Command.commandHandler(_))
+                BuildAdapter(Command)
             )));
         
         ClansCommands.getCommands()
             .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
                 new Regex(Command.Pattern),
                 Command.Method,
-                BuildAdapter(_ => Command.commandHandler(_))
+                BuildAdapter(Command)
             )));
     }
 
     private static HttpServiceReceiveThread.RequestHandler BuildAdapter(
-        Func<HttpListenerContext, object> commandHandler)
+        Command command)
     {
         return DelegateSupport.ConvertDelegate<HttpServiceReceiveThread.RequestHandler>(
             new Action<HttpListenerContext>(context =>
             {
-                var commandResponse = QueryDispatcher.Instance.Dispatch(() => commandHandler(context));
+                var request = HttpRequestParser.ParseHttpRequest(context.request, command);
+                Plugin.Logger?.LogInfo($"Http Request parsed is {JsonSerializer.Serialize(request, _serializerOptions)}");
+                var commandResponse = QueryDispatcher.Instance.Dispatch(() => command.CommandHandler(request));
                 while (commandResponse.Status == Status.PENDING)
                 {
                     Thread.Sleep(25);

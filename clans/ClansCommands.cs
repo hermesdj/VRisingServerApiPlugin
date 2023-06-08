@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System.Collections.Generic;
 using System.Linq;
 using VRisingServerApiPlugin.command;
 
@@ -13,7 +14,7 @@ public abstract class ClansCommands : CommandHandler
             new(
                 Pattern: "^/v-rising-server-api/clans$",
                 Method: "GET",
-                commandHandler: (_) => GetAllClans()
+                CommandHandler: (_) => GetAllClans()
             )
         };
 

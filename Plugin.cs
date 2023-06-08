@@ -6,7 +6,6 @@ using BepInEx.Unity.IL2CPP;
 using Bloodstone.API;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
-using Stunlock.Localization;
 using UnityEngine;
 using VRisingServerApiPlugin.query;
 

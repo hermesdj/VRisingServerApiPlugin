@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace VRisingServerApiPlugin.players;
 
 public readonly record struct PlayerListApiResponse(
-    List<ApiPlayer> players
+    List<object> players
 );
     
 public readonly record struct PlayerApiResponse(

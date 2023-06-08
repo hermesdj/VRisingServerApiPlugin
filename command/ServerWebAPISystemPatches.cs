@@ -24,7 +24,9 @@ public class ServerWebAPISystemPatches
     private static readonly JsonSerializerOptions _serializerOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        NumberHandling = JsonNumberHandling.Strict,
+        WriteIndented = false
     };
 
     [HarmonyPostfix]
@@ -82,7 +84,8 @@ public class ServerWebAPISystemPatches
                 context.Response.ContentType = MediaTypeNames.Application.Json;
 
                 var responseWriter = new StreamWriter(context.Response.OutputStream);
-                responseWriter.Write(JsonSerializer.Serialize(responseData, _serializerOptions));
+                
+                responseWriter.Write(JsonSerializer.Serialize(responseData,  _serializerOptions));
                 responseWriter.Flush();
             })
         )!;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Il2CppSystem;
 using VRisingServerApiPlugin.command;
-using VRisingServerApiPlugin.http;
 
 namespace VRisingServerApiPlugin.players;
 
@@ -37,7 +36,7 @@ public abstract class PlayersCommands : CommandHandler
     {
         var players = ServerWorld.GetAllPlayerCharacters()
             .Where(player => player.User.IsConnected)
-            .Select(PlayerUtils.Convert).ToList();
+            .Select(PlayerUtils.Convert).ToList<object>();
 
         return new PlayerListApiResponse(players);
     }
@@ -45,7 +44,7 @@ public abstract class PlayersCommands : CommandHandler
     private static PlayerListApiResponse GetAllPlayers()
     {
         var players = ServerWorld.GetAllPlayerCharacters()
-            .Select(PlayerUtils.Convert).ToList();
+            .Select(PlayerUtils.Convert).ToList<object>();
 
         return new PlayerListApiResponse(players);
     }

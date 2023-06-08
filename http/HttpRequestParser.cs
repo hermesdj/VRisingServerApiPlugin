@@ -1,9 +1,7 @@
 ﻿#nullable enable
-using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Text.Json;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Net;
 using VRisingServerApiPlugin.command;
 

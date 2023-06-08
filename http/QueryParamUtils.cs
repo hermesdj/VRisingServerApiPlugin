@@ -29,7 +29,7 @@ public class QueryParamUtils
     public static IEnumerable<KeyValuePair<string, string>> ParseQueryString(string url, string pattern)
     {
         var regex = new Regex(pattern);
-        Plugin.Logger?.LogInfo($"Parsing query params from {url}");
+        Plugin.Logger?.LogDebug($"Parsing query params from {url} with Pattern {pattern}");
         var matches = regex.Matches(url);
         for (var i = 0; i < matches.Count; i++)
         {
@@ -40,7 +40,7 @@ public class QueryParamUtils
                 var group = match.Groups[j];
                 var name = group.Name;
                 var value = group.Value;
-                Plugin.Logger?.LogInfo($"Found Match {name}={value}");
+                Plugin.Logger?.LogDebug($"Found Match {name}={value}");
                 yield return new KeyValuePair<string, string>(name, value);   
             }
         }

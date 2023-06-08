@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ProjectM;
 using ProjectM.Network;
+using ProjectM.UI;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -20,6 +21,7 @@ public static class ServerWorld
 
     public static EntityManager EntityManager = Server.EntityManager;
     public static PrefabCollectionSystem PrefabCollectionSystem = Server.GetExistingSystem<PrefabCollectionSystem>();
+    public static GameDataSystem GameDataSystem = Server.GetExistingSystem<GameDataSystem>();
     
     public static bool IsServer => Application.productName == "VRisingServer";
 
@@ -66,7 +68,7 @@ public static class ServerWorld
         return userEntity.HasValue ? ConvertEntityToPlayer(userEntity.Value) : null;
     }
 
-    public static List<ClanTeam> GetAllClans()
+    public static IEnumerable<ClanTeam> GetAllClans()
     {
         return ListUtils.Convert(
             EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClanTeam>())

@@ -1,16 +1,15 @@
 ﻿#nullable enable
 using System.Collections.Generic;
-using System.Linq;
 using ProjectM;
 using Stunlock.Localization;
-using Unity.Collections;
-using Entity = Unity.Entities.Entity;
+using Unity.Entities;
+using VRisingServerApiPlugin.clans;
 
 namespace VRisingServerApiPlugin.players;
 
 public static class PlayerUtils
 {
-    private static ClanTeam? ResolveClan(ServerWorld.Player player)
+    private static ApiClan? ResolveClan(ServerWorld.Player player)
     {
         var clanEntity = player.User.ClanEntity._Entity;
         ClanTeam? clan = null;
@@ -20,49 +19,77 @@ public static class PlayerUtils
             clan = ServerWorld.EntityManager.GetComponentData<ClanTeam>(clanEntity);
         }
 
-        return clan;
+        return clan.HasValue ? ClanUtils.Convert(clan.Value) : null;
+    }
+
+    private static string? ResolveClanId(ServerWorld.Player player)
+    {
+        var clanEntity = player.User.ClanEntity._Entity;
+        ClanTeam? clan = null;
+
+        if (ServerWorld.EntityManager.HasComponent<ClanTeam>(clanEntity))
+        {
+            clan = ServerWorld.EntityManager.GetComponentData<ClanTeam>(clanEntity);
+        }
+
+        return clan.HasValue ? ClanUtils.Convert(clan.Value).Id : null;
     }
     
     public static ApiPlayer Convert(ServerWorld.Player player)
     {
-        var clan = ResolveClan(player);
-
         return new ApiPlayer(
-            UserIndex: player.User.Index,
-            Name: player.Character.Name.ToString(),
-            SteamID: player.User.PlatformId.ToString(),
-            GearLevel: (int) ServerWorld.EntityManager.GetComponentData<Equipment>(player.CharacterEntity).GetFullLevel(),
-            ClanName: clan?.Name.ToString(),
-            ClanId: clan?.ClanGuid.ToString()
-            );
+            player.User.Index,
+            player.Character.Name.ToString(),
+            player.User.PlatformId.ToString(),
+            ResolveClanId(player),
+            (int) ServerWorld.EntityManager.GetComponentData<Equipment>(player.CharacterEntity).GetFullLevel()
+        );
     }
 
     private static ApiPlayerStats ResolveStats(Equipment equipment)
     {
-        return new ApiPlayerStats(ArmorLevel: equipment.ArmorLevel.Value, WeaponLevel: equipment.WeaponLevel.Value,
-            SpellLevel: equipment.SpellLevel.Value);
+        return new ApiPlayerStats(equipment.ArmorLevel.Value, equipment.WeaponLevel.Value,
+            equipment.SpellLevel.Value);
     }
 
-    private static List<Gear> resolveGear(Equipment equipment)
+    private static EmptyGear ResolveItem(PrefabGUID guid, Entity entity, EquipmentSlot slot)
     {
-        return new List<Gear>();
+        var data = ServerWorld.GameDataSystem.ManagedDataRegistry.GetOrDefault<ManagedItemData?>(guid);
+
+        if (data == null) return new EmptyGear(slot);
+        
+        var name = data.Name.GetGuid().ToGuid().ToString();
+        var description = data.Description.Key.GetGuid().ToGuid().ToString();
+        return new Gear(name, data.PrefabName, description, slot);
+    }
+
+    private static List<object> resolveGear(Equipment equipment)
+    {
+        return new List<object>
+        {
+            ResolveItem(equipment.ArmorChestSlotId, equipment.ArmorChestSlotEntity._Entity, EquipmentSlot.ARMOR_CHEST),
+            ResolveItem(equipment.CloakSlotId, equipment.CloakSlotEntity._Entity, EquipmentSlot.CLOACK),
+            ResolveItem(equipment.ArmorHeadgearSlotId, equipment.ArmorHeadgearSlotEntity._Entity, EquipmentSlot.ARMOR_HEADGEAR),
+            ResolveItem(equipment.ArmorFootgearSlotId, equipment.ArmorFootgearSlotEntity._Entity, EquipmentSlot.ARMOR_FOOTGEAR),
+            ResolveItem(equipment.ArmorLegsSlotId, equipment.ArmorLegsSlotEntity._Entity, EquipmentSlot.ARMOR_LEGS),
+            ResolveItem(equipment.ArmorGlovesSlotId, equipment.ArmorGlovesSlotEntity._Entity, EquipmentSlot.ARMOR_GLOVES),
+            ResolveItem(equipment.GrimoireSlotId, equipment.GrimoireSlotEntity._Entity, EquipmentSlot.GRIMOIRE),
+            ResolveItem(equipment.WeaponSlotId, equipment.WeaponSlotEntity._Entity, EquipmentSlot.WEAPON)
+        };
     }
 
     public static ApiPlayerDetails ConvertDetails(ServerWorld.Player player)
     {
-        var clan = ResolveClan(player);
-        
         var equipment = ServerWorld.EntityManager.GetComponentData<Equipment>(player.CharacterEntity);
         
         return new ApiPlayerDetails(
-            UserIndex: player.User.Index,
-            Name: player.Character.Name.ToString(),
-            SteamID: player.User.PlatformId.ToString(),
-            GearLevel: (int) equipment.GetFullLevel(),
-            ClanName: clan?.Name.ToString(),
-            ClanId: clan?.ClanGuid.ToString(),
-            gear: resolveGear(equipment),
-            stats: ResolveStats(equipment)
+            player.User.Index,
+            player.Character.Name.ToString(),
+            player.User.PlatformId.ToString(),
+            ResolveClanId(player),
+            (int) equipment.GetFullLevel(),
+            ResolveStats(equipment),
+            resolveGear(equipment)
             );
     }
 }

@@ -1,6 +1,4 @@
 ﻿#nullable enable
-#nullable enable
-#nullable enable
 namespace VRisingServerApiPlugin.query;
 
 public enum Status

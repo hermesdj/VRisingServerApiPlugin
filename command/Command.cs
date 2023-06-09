@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System;
-using Il2CppSystem.Globalization;
 using VRisingServerApiPlugin.http;
 
 namespace VRisingServerApiPlugin.command;

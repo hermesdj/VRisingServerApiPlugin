@@ -14,4 +14,12 @@ public readonly record struct ListClanResponse(
 public readonly record struct ListClanPlayersResponse(
     List<int>? players,
     string? id
+);
+    
+public readonly record struct UpdateClanNameBody(
+    string Name
+);
+
+public readonly record struct UpdateClanMottoBody(
+    string Motto
     );

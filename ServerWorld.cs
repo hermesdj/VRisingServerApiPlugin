@@ -20,7 +20,6 @@ public static class ServerWorld
     private static readonly World Server = _server.Value;
 
     public static EntityManager EntityManager = Server.EntityManager;
-    public static PrefabCollectionSystem PrefabCollectionSystem = Server.GetExistingSystem<PrefabCollectionSystem>();
     public static GameDataSystem GameDataSystem = Server.GetExistingSystem<GameDataSystem>();
     
     public static bool IsServer => Application.productName == "VRisingServer";
@@ -75,6 +74,14 @@ public static class ServerWorld
                 .ToEntityArray(Allocator.Temp)
         )
             .Select(clanEntity => EntityManager.GetComponentData<ClanTeam>(clanEntity))
+            .ToList();
+    }
+
+    public static IEnumerable<Entity> GetAllClanEntities()
+    {
+        return ListUtils
+            .Convert(EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClanTeam>())
+                .ToEntityArray(Allocator.Temp))
             .ToList();
     }
 

@@ -1,7 +1,9 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using System.Linq;
+using Il2CppSystem;
 using ProjectM;
+using Unity.Entities;
 
 namespace VRisingServerApiPlugin.clans;
 
@@ -38,4 +40,24 @@ public static class ClanUtils
             playerIds: GetClanPlayers(clanTeam)
         );
     }
+
+    public static ClanTeam? GetClanById(string clanId)
+    {
+        var clanGuid = Guid.Parse(clanId);
+        return ServerWorld.GetAllClans()
+            .FirstOrDefault(clanTeam => clanTeam.ClanGuid.Equals(clanGuid));
+    }
+
+    public static ClanTeamWithEntity? GetClanWithEntityById(string clanId)
+    {
+        var clanGuid = Guid.Parse(clanId);
+        return ServerWorld.GetAllClanEntities()
+            .Select(clanEntity => new ClanTeamWithEntity(ClanTeam: ServerWorld.EntityManager.GetComponentData<ClanTeam>(clanEntity), ClanEntity: clanEntity))
+            .FirstOrDefault(clanTeamWithEntity => clanTeamWithEntity.ClanTeam.ClanGuid.Equals(clanGuid));
+    }
+
+    public readonly record struct ClanTeamWithEntity(
+        Entity ClanEntity,
+        ClanTeam ClanTeam
+    );
 }

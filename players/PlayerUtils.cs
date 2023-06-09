@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 using ProjectM;
-using Stunlock.Localization;
 using Unity.Entities;
 using VRisingServerApiPlugin.clans;
 

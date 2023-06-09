@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System.Collections.Generic;
-using UnityEngine.Rendering.HighDefinition;
 
 namespace VRisingServerApiPlugin.clans;
 

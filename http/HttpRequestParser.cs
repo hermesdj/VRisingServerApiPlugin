@@ -14,18 +14,25 @@ public static class HttpRequestParser
     {
         object? body = null;
 
-        if (command.Method != "GET")
+        if (command.Method == "GET")
+            return new HttpRequest(
+                queryParams: QueryParamUtils.ParseQueryString(request.url.Query)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+                urlParams: QueryParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern)
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+                url: request.raw_url,
+                body: body
+            );
+        
+        if (request.Headers["Content-Type"] == MediaTypeNames.Application.Json)
         {
-            if (request.Headers["Content-Type"] == MediaTypeNames.Application.Json)
-            {
-                var inputStream = new Il2CppSystem.IO.StreamReader(request.InputStream);
-                var jsonString = inputStream.ReadToEnd();
-                body = JsonDocument.Parse(jsonString);
-            }
-            else
-            {
-                body = request.InputStream;
-            }
+            var inputStream = new Il2CppSystem.IO.StreamReader(request.InputStream);
+            var jsonString = inputStream.ReadToEnd();
+            body = JsonDocument.Parse(jsonString);
+        }
+        else
+        {
+            body = request.InputStream;
         }
 
         return new HttpRequest(

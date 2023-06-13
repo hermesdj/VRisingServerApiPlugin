@@ -1,6 +1,5 @@
 # VRisingServerApiPlugin
-
-VRising Server API used to expose new HTTP Routes
+![](https://github.com/hermesdj/VRisingServerApiPlugin/raw/dev/images/logo_128.png) VRising Server API used to expose new HTTP Routes
 
 ### Configuring the server
 

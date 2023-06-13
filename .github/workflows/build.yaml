@@ -55,7 +55,7 @@ jobs:
 
       - name: Push to Nuget
         if: ${{ !env.ACT && github.event_name == 'push' }}
-        run: dotnet nuget push ./nuget/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ./nuget/*.nupkg -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: GH Release
         uses: softprops/action-gh-release@v1

@@ -6,14 +6,14 @@ namespace VRisingServerApiPlugin.command;
 
 public class Command
 {
-    public string Pattern { get; set; }
-    public string Method { get; set; }
+    public string Pattern { get; }
+    public string Method { get; }
 
-    public Func<HttpRequest, object> CommandHandler { get; set; }
+    public Func<HttpRequest, object?> CommandHandler { get; }
 
-    public Command(string Pattern, string Method, Func<HttpRequest, object> CommandHandler){
-        this.Pattern = Pattern;
-        this.Method = Method;
-        this.CommandHandler = CommandHandler;
+    public Command(string pattern, string method, Func<HttpRequest, object?> commandHandler){
+        Pattern = pattern;
+        Method = method;
+        CommandHandler = commandHandler;
     }
 }

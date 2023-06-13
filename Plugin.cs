@@ -3,17 +3,15 @@ using System.Reflection;
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
-using Bloodstone.API;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
+using VRisingServerApiPlugin.command;
 using VRisingServerApiPlugin.query;
 
 namespace VRisingServerApiPlugin;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-[BepInDependency("gg.deca.Bloodstone")]
-[Reloadable]
 public class Plugin : BasePlugin
 {
     internal static ManualLogSource? Logger;
@@ -29,6 +27,8 @@ public class Plugin : BasePlugin
         }
 
         Logger = Log;
+        
+        CommandRegistry.RegisterAll();
         
         ClassInjector.RegisterTypeInIl2Cpp<QueryDispatcher>();
         _queryDispatcher = AddComponent<QueryDispatcher>();

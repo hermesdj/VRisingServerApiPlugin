@@ -4,8 +4,9 @@ using System.Collections.Generic;
 namespace VRisingServerApiPlugin.http;
 
 public readonly record struct HttpRequest(
-    object? body,
+    string body,
     string url,
+    string contentType,
     Dictionary<string, string> urlParams,
     Dictionary<string, string> queryParams
 );

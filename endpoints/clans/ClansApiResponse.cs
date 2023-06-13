@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using System.Collections.Generic;
 
-namespace VRisingServerApiPlugin.clans;
+namespace VRisingServerApiPlugin.endpoints.clans;
 
 public readonly record struct GetClanResponse(
     object? clan

@@ -3,7 +3,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace VRisingServerApiPlugin.players;
+namespace VRisingServerApiPlugin.endpoints.players;
 
 public class EquipmentSlotConverter : JsonConverter<EquipmentSlot>
 {

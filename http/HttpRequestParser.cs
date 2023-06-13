@@ -9,10 +9,10 @@ namespace VRisingServerApiPlugin.http;
 
 public static class HttpRequestParser
 {
-
     public static HttpRequest ParseHttpRequest(HttpListenerRequest request, Command command)
     {
-        object? body = null;
+        var body = "";
+        var contentType = request.Headers["Content-Type"];
 
         if (command.Method == "GET")
             return new HttpRequest(
@@ -21,25 +21,21 @@ public static class HttpRequestParser
                 urlParams: QueryParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                 url: request.raw_url,
-                body: body
+                body: body,
+                contentType: contentType
             );
-        
-        if (request.Headers["Content-Type"] == MediaTypeNames.Application.Json)
-        {
-            var inputStream = new Il2CppSystem.IO.StreamReader(request.InputStream);
-            var jsonString = inputStream.ReadToEnd();
-            body = JsonDocument.Parse(jsonString);
-        }
-        else
-        {
-            body = request.InputStream;
-        }
+
+        var inputStream = new Il2CppSystem.IO.StreamReader(request.InputStream);
+        body = inputStream.ReadToEnd();
 
         return new HttpRequest(
-            queryParams: QueryParamUtils.ParseQueryString(request.url.Query).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            urlParams:QueryParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern).ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+            queryParams: QueryParamUtils.ParseQueryString(request.url.Query)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
+            urlParams: QueryParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
             url: request.raw_url,
-            body: body
-            );
+            body: body,
+            contentType: contentType
+        );
     }
 }

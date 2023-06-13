@@ -10,7 +10,7 @@
     <RootNamespace>VRisingServerApiPlugin</RootNamespace>
     <Authors>jays</Authors>
 
-    <GamePath>Z:\Dev\workspace\v-rising-server\server-bin</GamePath>
+    <GamePath>C:\Users\Jérémy\Documents\GitHub\v-rising-server\server\bin</GamePath>
     <PluginsPath>$(GamePath)\BepInEx\plugins</PluginsPath>
   </PropertyGroup>
 
@@ -18,8 +18,11 @@
     <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be*" IncludeAssets="compile" />
     <PackageReference Include="BepInEx.Core" Version="6.0.0-be.668" IncludeAssets="compile" />
 	<PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" />
-    <PackageReference Include="VRising.Bloodstone" Version="0.1.3" />
-    <PackageReference Include="VRising.Unhollowed.Client" Version="0.6.5.57575071" />
+    <PackageReference Include="VRising.Unhollowed.Client" Version="0.6.5.57575090" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include=".github\workflows\release.yaml" />
   </ItemGroup>
 
   <Target Name="CopyDLLsToTargetServer" AfterTargets="Build">

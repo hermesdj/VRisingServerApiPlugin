@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace VRisingServerApiPlugin.players;
+namespace VRisingServerApiPlugin.endpoints.players;
 
 public class ApiUserDetails
 {

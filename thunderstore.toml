@@ -1,0 +1,27 @@
+﻿[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "hermesdj"
+name = "VRising Http Api Plugin"
+versionNumber = "1.0.0"
+description = "Http Api plugin framework used to add new routes to a V Rising Server existing HTTP API"
+websiteUrl = "https://github.com/hermesdj/VRisingServerApiPlugin"
+containsNsfwContent = false
+
+[package.dependencies]
+BepInEx-BepInExPack_V_Rising = "1.668.5"
+
+[build]
+icon = "./images/logo_256.png"
+readme = "./README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "./dist"
+target = ""
+
+[publish]
+repository = "https://v-rising.thunderstore.io"
+communities = ["v-rising"]
+categories = ["gloomrot-update", "mods", "server"]

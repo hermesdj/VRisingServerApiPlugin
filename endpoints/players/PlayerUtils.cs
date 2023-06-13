@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using ProjectM;
 using Unity.Entities;
-using VRisingServerApiPlugin.clans;
+using VRisingServerApiPlugin.endpoints.clans;
 
-namespace VRisingServerApiPlugin.players;
+namespace VRisingServerApiPlugin.endpoints.players;
 
 public static class PlayerUtils
 {

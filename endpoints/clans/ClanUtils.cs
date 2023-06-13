@@ -5,7 +5,7 @@ using Il2CppSystem;
 using ProjectM;
 using Unity.Entities;
 
-namespace VRisingServerApiPlugin.clans;
+namespace VRisingServerApiPlugin.endpoints.clans;
 
 public static class ClanUtils
 {
@@ -41,19 +41,17 @@ public static class ClanUtils
         );
     }
 
-    public static ClanTeam? GetClanById(string clanId)
+    public static ClanTeam? GetClanById(Guid clanGuid)
     {
-        var clanGuid = Guid.Parse(clanId);
         return ServerWorld.GetAllClans()
             .FirstOrDefault(clanTeam => clanTeam.ClanGuid.Equals(clanGuid));
     }
 
-    public static ClanTeamWithEntity? GetClanWithEntityById(string clanId)
+    public static ClanTeamWithEntity? GetClanWithEntityById(Guid clanId)
     {
-        var clanGuid = Guid.Parse(clanId);
         return ServerWorld.GetAllClanEntities()
             .Select(clanEntity => new ClanTeamWithEntity(ClanTeam: ServerWorld.EntityManager.GetComponentData<ClanTeam>(clanEntity), ClanEntity: clanEntity))
-            .FirstOrDefault(clanTeamWithEntity => clanTeamWithEntity.ClanTeam.ClanGuid.Equals(clanGuid));
+            .FirstOrDefault(clanTeamWithEntity => clanTeamWithEntity.ClanTeam.ClanGuid.Equals(clanId));
     }
 
     public readonly record struct ClanTeamWithEntity(

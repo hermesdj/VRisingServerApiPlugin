@@ -11,9 +11,7 @@ using Il2CppSystem.Net;
 using Il2CppSystem.Text.RegularExpressions;
 using ProjectM;
 using ProjectM.Network;
-using VRisingServerApiPlugin.clans;
 using VRisingServerApiPlugin.http;
-using VRisingServerApiPlugin.players;
 using VRisingServerApiPlugin.query;
 
 namespace VRisingServerApiPlugin.command;
@@ -38,20 +36,16 @@ public class ServerWebAPISystemPatches
             Plugin.Logger?.LogInfo($"HTTP API is not enabled !");
             return;
         }
-        
-        PlayersCommands.getCommands()
-            .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
-                new Regex(Command.Pattern),
-                Command.Method,
-                BuildAdapter(Command)
-            )));
-        
-        ClansCommands.getCommands()
-            .ForEach(Command => __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
-                new Regex(Command.Pattern),
-                Command.Method,
-                BuildAdapter(Command)
-            )));
+
+        foreach (var command in CommandRegistry.GetCommands())
+        {
+            Plugin.Logger?.LogInfo($"Registering route with pattern {command.Pattern}");
+            __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
+                new Regex(command.Pattern),
+                command.Method,
+                BuildAdapter(command)
+            ));
+        }
     }
 
     private static HttpServiceReceiveThread.RequestHandler BuildAdapter(
@@ -61,7 +55,8 @@ public class ServerWebAPISystemPatches
             new Action<HttpListenerContext>(context =>
             {
                 var request = HttpRequestParser.ParseHttpRequest(context.request, command);
-                Plugin.Logger?.LogInfo($"Http Request parsed is {JsonSerializer.Serialize(request, _serializerOptions)}");
+                Plugin.Logger?.LogInfo(
+                    $"Http Request parsed is {JsonSerializer.Serialize(request, _serializerOptions)}");
                 var commandResponse = QueryDispatcher.Instance.Dispatch(() => command.CommandHandler(request));
                 while (commandResponse.Status == Status.PENDING)
                 {
@@ -72,9 +67,20 @@ public class ServerWebAPISystemPatches
 
                 if (commandResponse.Status is Status.FAILURE or Status.PENDING)
                 {
-                    Plugin.Logger?.LogError($"Request with url '{context.Request.Url.ToString()}' failed with message : {commandResponse.Exception?.Message}");
-                    context.Response.StatusCode = 500;
-                    responseData = new InternalServerError("about:blank", "Internal Server Error");
+                    Plugin.Logger?.LogError(
+                        $"Request with url '{context.Request.Url.ToString()}' failed with message : {commandResponse.Exception?.Message}");
+
+                    if (commandResponse.Exception is HttpException httpException)
+                    {
+                        context.Response.StatusCode = httpException.Status;
+                        responseData =
+                            new InternalServerError(httpException.GetType().ToString(), httpException.Message);
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 500;
+                        responseData = new InternalServerError("about:blank", "Internal Server Error");
+                    }
                 }
                 else
                 {
@@ -84,8 +90,8 @@ public class ServerWebAPISystemPatches
                 context.Response.ContentType = MediaTypeNames.Application.Json;
 
                 var responseWriter = new StreamWriter(context.Response.OutputStream);
-                
-                responseWriter.Write(JsonSerializer.Serialize(responseData,  _serializerOptions));
+
+                responseWriter.Write(JsonSerializer.Serialize(responseData, _serializerOptions));
                 responseWriter.Flush();
             })
         )!;

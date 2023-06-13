@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using VRisingServerApiPlugin.http;
 
 namespace VRisingServerApiPlugin.query;
 

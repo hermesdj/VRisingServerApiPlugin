@@ -14,14 +14,13 @@ public class QueryParamUtils
     }
     public static IEnumerable<KeyValuePair<string, string>> ParseQueryString(string url)
     {
-        Plugin.Logger?.LogDebug($"Parsing query params from {url}");
+        ApiPlugin.Logger?.LogDebug($"Parsing query params from {url}");
         var matches = queryStringRegex.Matches(url);
         for (var i = 0; i < matches.Count; i++)
         {
             var match = matches[i];
             var name = match.Groups["name"].Value;
             var value = match.Groups["value"].Value;
-            Plugin.Logger?.LogDebug($"Found Match {name}={value}");
             yield return new KeyValuePair<string, string>(name, value);
         }
     }
@@ -29,7 +28,7 @@ public class QueryParamUtils
     public static IEnumerable<KeyValuePair<string, string>> ParseQueryString(string url, string pattern)
     {
         var regex = new Regex(pattern);
-        Plugin.Logger?.LogDebug($"Parsing query params from {url} with Pattern {pattern}");
+        ApiPlugin.Logger?.LogDebug($"Parsing query params from {url} with Pattern {pattern}");
         var matches = regex.Matches(url);
         for (var i = 0; i < matches.Count; i++)
         {
@@ -40,7 +39,6 @@ public class QueryParamUtils
                 var group = match.Groups[j];
                 var name = group.Name;
                 var value = group.Value;
-                Plugin.Logger?.LogDebug($"Found Match {name}={value}");
                 yield return new KeyValuePair<string, string>(name, value);   
             }
         }

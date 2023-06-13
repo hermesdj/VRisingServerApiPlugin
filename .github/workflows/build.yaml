@@ -65,5 +65,6 @@ jobs:
           name: v${{ env.GitVersion_SemVer }}
           files: ./bin/Release/net6.0/VRisingServerApiPlugin.dll
           fail_on_unmatched_files: true
+          generate_release_notes: true
           prerelease: true
           tag_name: v${{ env.GitVersion_SemVer }}

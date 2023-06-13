@@ -21,7 +21,7 @@ public static class ServerWorld
 
     public static EntityManager EntityManager = Server.EntityManager;
     public static GameDataSystem GameDataSystem = Server.GetExistingSystem<GameDataSystem>();
-    
+
     public static bool IsServer => Application.productName == "VRisingServer";
 
     private static World? GetWorld(string name)
@@ -40,39 +40,47 @@ public static class ServerWorld
     private static Player ConvertEntityToPlayer(Entity userEntity)
     {
         var user = EntityManager.GetComponentData<User>(userEntity);
-        return new Player(user, 
+
+        PlayerCharacter? playerCharacter = EntityManager.HasComponent<PlayerCharacter>(user.LocalCharacter._Entity)
+            ? EntityManager.GetComponentData<PlayerCharacter>(user.LocalCharacter._Entity)
+            : null;
+
+        return new Player(user,
             userEntity,
-            EntityManager.GetComponentData<PlayerCharacter>(user.LocalCharacter._Entity),
-            user.LocalCharacter._Entity);
+            playerCharacter,
+            user.LocalCharacter._Entity
+        );
     }
 
     public static IEnumerable<Player> GetAllPlayerCharacters()
     {
         return ListUtils.Convert(
-            EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
-                .ToEntityArray(Allocator.Temp)
+                EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
+                    .ToEntityArray(Allocator.Temp)
             )
             .Where(userEntity => EntityManager.GetComponentData<User>(userEntity).LocalCharacter._Entity != Entity.Null)
             .Select(ConvertEntityToPlayer)
-                .ToList();
+            .ToList();
     }
 
     public static Player? GetPlayer(int userIndex)
     {
-        Entity? userEntity = ListUtils
+        Entity? entity = ListUtils
             .Convert(EntityManager.CreateEntityQuery(ComponentType.ReadOnly<User>())
                 .ToEntityArray(Allocator.Temp))
-            .FirstOrDefault(userEntity => EntityManager.GetComponentData<User>(userEntity).Index == userIndex);
+            .FirstOrDefault(e => EntityManager.GetComponentData<User>(e).Index == userIndex);
 
-        return userEntity.HasValue ? ConvertEntityToPlayer(userEntity.Value) : null;
+        return entity.HasValue
+            ? ConvertEntityToPlayer(entity.Value)
+            : null;
     }
 
     public static IEnumerable<ClanTeam> GetAllClans()
     {
         return ListUtils.Convert(
-            EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClanTeam>())
-                .ToEntityArray(Allocator.Temp)
-        )
+                EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClanTeam>())
+                    .ToEntityArray(Allocator.Temp)
+            )
             .Select(clanEntity => EntityManager.GetComponentData<ClanTeam>(clanEntity))
             .ToList();
     }
@@ -88,7 +96,7 @@ public static class ServerWorld
     public readonly record struct Player(
         User User,
         Entity UserEntity,
-        PlayerCharacter Character,
+        PlayerCharacter? Character,
         Entity CharacterEntity
     );
 }

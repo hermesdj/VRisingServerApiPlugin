@@ -2,6 +2,7 @@
 using VRisingServerApiPlugin.attributes;
 using VRisingServerApiPlugin.attributes.methods;
 using VRisingServerApiPlugin.attributes.parameters;
+using VRisingServerApiPlugin.http;
 
 namespace VRisingServerApiPlugin.endpoints.players;
 
@@ -31,8 +32,12 @@ public class PlayersEndpoints
     public PlayerApiResponse GetPlayerDetails([UrlParam("id")] int userIndex)
     {
         var player = ServerWorld.GetPlayer(userIndex);
-        return player.HasValue
-            ? new PlayerApiResponse(PlayerUtils.ConvertDetails(player.Value))
-            : new PlayerApiResponse();
+
+        if (!player.HasValue)
+        {
+            throw new HttpException(404, $"Player with id {userIndex} not found.");
+        }
+
+        return new PlayerApiResponse(PlayerUtils.ConvertDetails(player.Value));
     }
 }

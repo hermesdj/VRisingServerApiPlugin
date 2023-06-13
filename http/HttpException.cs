@@ -21,3 +21,10 @@ public class HttpException : Exception
         Status = status;
     }
 }
+
+public class HttpUnAuthorizeException : HttpException
+{
+    public HttpUnAuthorizeException() : base(401, "You are not authorized to access this endpoint")
+    {
+    }
+}

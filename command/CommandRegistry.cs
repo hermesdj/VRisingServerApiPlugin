@@ -53,7 +53,22 @@ public static class CommandRegistry
         if (method.GetCustomAttribute(typeof(HttpAttribute), true) is not HttpAttribute httpAttribute) return;
 
         var pattern = $"^{httpHandlerAttribute.BasePath}{httpAttribute.Pattern}$";
-        var command = new Command(pattern: pattern, method: httpAttribute.Method, request =>
+
+        var isProtected = httpAttribute.Protected || httpHandlerAttribute.AllRouteProtected;
+
+        var command = new Command(
+            pattern: pattern,
+            method: httpAttribute.Method,
+            commandHandler: GenerateHandler(container, method),
+            isProtected: isProtected
+        );
+
+        Commands.Add(command);
+    }
+
+    private static Func<HttpRequest, object?> GenerateHandler(object? container, MethodBase method)
+    {
+        return request =>
         {
             var args = new List<object?>();
             var parameters = method.GetParameters();
@@ -84,7 +99,7 @@ public static class CommandRegistry
 
             if (args.Count != parameters.Length)
             {
-                Plugin.Logger?.LogInfo($"parameters are {parameters} and parsed args are {args}");
+                ApiPlugin.Logger?.LogInfo($"parameters are {parameters} and parsed args are {args}");
                 throw new HttpException(400, "Invalid parameters !");
             }
 
@@ -96,13 +111,11 @@ public static class CommandRegistry
             {
                 if (ex.InnerException == null) throw;
 
-                Plugin.Logger?.LogError(
+                ApiPlugin.Logger?.LogError(
                     $"Inner Exception {ex.InnerException?.Message}, stack: {ex.InnerException?.StackTrace}");
                 throw ex.InnerException!;
             }
-        });
-
-        Commands.Add(command);
+        };
     }
 
     private static object? ParseUrlOrQueryArg(Dictionary<string, string> dictionary, string name,

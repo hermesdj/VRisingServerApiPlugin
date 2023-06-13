@@ -8,10 +8,13 @@ public class HttpAttribute : Attribute
     public string Pattern { get; set; }
 
     public string Method { get; set; }
-    
-    public HttpAttribute(string pattern, string method)
+
+    public bool Protected { get; set; }
+
+    public HttpAttribute(string pattern, string method, bool isProtected = false)
     {
         Pattern = pattern;
         Method = method;
+        Protected = isProtected;
     }
 }

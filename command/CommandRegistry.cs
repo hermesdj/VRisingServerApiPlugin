@@ -19,7 +19,7 @@ public static class CommandRegistry
 
     public static void RegisterAll() => RegisterAll(Assembly.GetCallingAssembly());
 
-    private static void RegisterAll(Assembly assembly)
+    public static void RegisterAll(Assembly assembly)
     {
         var types = ListAllHttpHandlerTypes(assembly);
 

@@ -6,7 +6,7 @@ namespace VRisingServerApiPlugin.attributes;
 public class HttpHandlerAttribute : Attribute
 {
     public string BasePath { get; set; }
-
+    
     public HttpHandlerAttribute(string basePath = "/")
     {
         BasePath = basePath;

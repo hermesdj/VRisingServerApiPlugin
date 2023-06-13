@@ -2,9 +2,9 @@
 
 on:
   push:
-    branches: ["prod"]
+    branches: ["master"]
   pull_request:
-    branches: ["prod"]
+    branches: ["master"]
 
 jobs:
   build:
@@ -31,6 +31,7 @@ jobs:
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
           versionSpec: "5.x"
+          preferLatestVersion: true
 
       - name: Determine Version
         uses: gittools/actions/gitversion/execute@v0.9.7
@@ -62,7 +63,7 @@ jobs:
         with:
           body: Automatic pre-release of ${{ env.GitVersion_SemVer }} for ${{ env.GitVersion_ShortSha }}
           name: v${{ env.GitVersion_SemVer }}
-          files: ./bin/Debug/net6.0/VRisingServerApiPlugin.dll
+          files: ./bin/Release/net6.0/VRisingServerApiPlugin.dll
           fail_on_unmatched_files: true
           prerelease: true
           tag_name: v${{ env.GitVersion_SemVer }}

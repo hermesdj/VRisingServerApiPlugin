@@ -44,7 +44,7 @@ jobs:
         run: dotnet test
 
       - name: Package Nuget
-        run: dotnet pack VCF.Core --configuration Release -p:Version=$GitVersion_SemVer --output ./nuget
+        run: dotnet pack VRisingServerApiPlugin --configuration Release -p:Version=$GitVersion_SemVer --output ./nuget
 
       - name: Upload a Build Artifact
         if: ${{ !env.ACT && github.event_name == 'push' }}

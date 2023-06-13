@@ -8,5 +8,6 @@ public readonly record struct HttpRequest(
     string url,
     string contentType,
     Dictionary<string, string> urlParams,
-    Dictionary<string, string> queryParams
+    Dictionary<string, string> queryParams,
+    HttpRequestParser.AuthenticatedUser? user = null
 );

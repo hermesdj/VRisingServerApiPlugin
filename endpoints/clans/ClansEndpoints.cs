@@ -41,8 +41,9 @@ public class ClansEndpoints
             id: clan?.ClanGuid.ToString());
     }
 
-    [HttpPost(
-        @"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/updateName")]
+    [HttpPost(pattern:
+        @"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/updateName",
+        isProtected: true)]
     public GetClanResponse UpdateClanName([UrlParam("id")] Guid clanId, [RequestBody] UpdateClanNameBody? body)
     {
         if (body.HasValue)
@@ -57,7 +58,7 @@ public class ClansEndpoints
                 }
 
                 var clanTeam = clan.Value.ClanTeam;
-                Plugin.Logger?.LogInfo(
+                ApiPlugin.Logger?.LogInfo(
                     $"Updating clan name from '{clanTeam.Name.ToString()}' to '{body.Value.Name}'");
                 clanTeam.Name = new FixedString64(body.Value.Name);
                 ServerWorld.EntityManager.SetComponentData(clan.Value.ClanEntity, clanTeam);
@@ -69,11 +70,12 @@ public class ClansEndpoints
         return new GetClanResponse(result.HasValue ? ClanUtils.Convert(result.Value) : null);
     }
 
-    [HttpPost(
-        @"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/updateMotto")]
+    [HttpPost(pattern:
+        @"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/updateMotto",
+        isProtected: true)]
     public GetClanResponse UpdateClanMotto([UrlParam("id")] Guid clanId, [RequestBody] UpdateClanMottoBody? body)
     {
-        Plugin.Logger?.LogInfo($"Clan GUID is {clanId.ToString()}");
+        ApiPlugin.Logger?.LogInfo($"Clan GUID is {clanId.ToString()}");
         if (body.HasValue)
         {
             var clan = ClanUtils.GetClanWithEntityById(clanId);
@@ -86,7 +88,7 @@ public class ClansEndpoints
                 }
 
                 var clanTeam = clan.Value.ClanTeam;
-                Plugin.Logger?.LogInfo(
+                ApiPlugin.Logger?.LogInfo(
                     $"Updating clan motto from '{clanTeam.Motto.ToString()}' to '{body.Value.Motto}'");
                 clanTeam.Motto = new FixedString64(body.Value.Motto);
                 ServerWorld.EntityManager.SetComponentData(clan.Value.ClanEntity, clanTeam);

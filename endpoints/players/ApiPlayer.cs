@@ -6,27 +6,47 @@ namespace VRisingServerApiPlugin.endpoints.players;
 
 public class ApiUserDetails
 {
-    private long TimeLastConnected { get; set; }
-    private bool IsBot { get; set; }
-    private bool IsAdmin { get; set; }
-    private bool IsConnected { get; set; }
+    public int UserIndex { get; set; }
+    public long TimeLastConnected { get; set; }
+    public bool IsBot { get; set; }
+    public bool IsAdmin { get; set; }
+    public bool IsConnected { get; set; }
+
+    protected ApiUserDetails(int userIndex, long timeLastConnected, bool isBot, bool isAdmin, bool isConnected)
+    {
+        UserIndex = userIndex;
+        TimeLastConnected = timeLastConnected;
+        IsBot = isBot;
+        IsAdmin = isAdmin;
+        IsConnected = isConnected;
+    }
 }
 
-public class ApiPlayer
+public class ApiPlayer : ApiUserDetails
 {
-    public int UserIndex { get; set; }
-    public string CharacterName { get; set; }
+    public string? CharacterName { get; set; }
     public string SteamID { get; set; }
     public string? ClanId { get; set; }
     public int GearLevel { get; set; }
+    public float? LastValidPositionX { get; set; }
+    public float? LastValidPositionY { get; set; }
 
-    public ApiPlayer(int userIndex, string characterName, string steamID, string? clanId, int gearLevel)
+    public bool HasLocalCharacter { get; set; }
+
+    public bool ShouldCreateCharacter { get; set; }
+
+    public ApiPlayer(int userIndex, string? characterName, string steamID, string? clanId, int gearLevel,
+        float? lastValidPositionX, float? lastValidPositionY, long timeLastConnected, bool isBot, bool isAdmin,
+        bool isConnected) : base(userIndex, timeLastConnected, isBot, isAdmin, isConnected)
     {
-        UserIndex = userIndex;
         CharacterName = characterName;
         SteamID = steamID;
         ClanId = clanId;
         GearLevel = gearLevel;
+        LastValidPositionX = lastValidPositionX;
+        LastValidPositionY = lastValidPositionY;
+        HasLocalCharacter = characterName != null;
+        ShouldCreateCharacter = !HasLocalCharacter;
     }
 }
 
@@ -35,7 +55,15 @@ public class ApiPlayerDetails : ApiPlayer
     public object Stats { get; set; }
     public List<object> Gears { get; set; }
 
-    public ApiPlayerDetails(int userIndex, string characterName, string steamID, string? clanId, int gearLevel, object stats, List<object> gears) : base(userIndex, characterName, steamID, clanId, gearLevel)
+    public ApiPlayerDetails(
+        int userIndex, string? characterName, string steamID, string? clanId, int gearLevel,
+        float? lastValidPositionX, float? lastValidPositionY,
+        long timeLastConnected, bool isBot, bool isAdmin, bool isConnected,
+        object stats,
+        List<object> gears
+    )
+        : base(userIndex, characterName, steamID, clanId, gearLevel, lastValidPositionX, lastValidPositionY,
+            timeLastConnected, isBot, isAdmin, isConnected)
     {
         Stats = stats;
         Gears = gears;
@@ -58,8 +86,8 @@ public class ApiPlayerStats
 
 public class EmptyGear
 {
-    public bool IsEmpty {get; set;}
-    
+    public bool IsEmpty { get; set; }
+
     public EquipmentSlot Slot { get; set; }
 
     protected EmptyGear(bool isEmpty, EquipmentSlot slot)
@@ -79,7 +107,7 @@ public class Gear : EmptyGear
 {
     public string Name { get; set; }
     public string Description { get; set; }
-    
+
     public string PrefabName { get; set; }
 
     public Gear(string name, string prefabName, string description, EquipmentSlot slot) : base(false, slot)

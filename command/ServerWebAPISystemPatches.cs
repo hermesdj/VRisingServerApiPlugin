@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Linq;
 using System.Net.Mime;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -19,7 +20,7 @@ namespace VRisingServerApiPlugin.command;
 [HarmonyPatch(typeof(ServerWebAPISystem))]
 public class ServerWebAPISystemPatches
 {
-    private static readonly JsonSerializerOptions _serializerOptions = new()
+    private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.Never,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -33,13 +34,13 @@ public class ServerWebAPISystemPatches
     {
         if (!SettingsManager.ServerHostSettings.API.Enabled)
         {
-            Plugin.Logger?.LogInfo($"HTTP API is not enabled !");
+            ApiPlugin.Logger?.LogInfo($"HTTP API is not enabled !");
             return;
         }
 
         foreach (var command in CommandRegistry.GetCommands())
         {
-            Plugin.Logger?.LogInfo($"Registering route with pattern {command.Pattern}");
+            ApiPlugin.Logger?.LogInfo($"Registering route with pattern {command.Pattern}");
             __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
                 new Regex(command.Pattern),
                 command.Method,
@@ -54,23 +55,41 @@ public class ServerWebAPISystemPatches
         return DelegateSupport.ConvertDelegate<HttpServiceReceiveThread.RequestHandler>(
             new Action<HttpListenerContext>(context =>
             {
-                var request = HttpRequestParser.ParseHttpRequest(context.request, command);
-                Plugin.Logger?.LogInfo(
-                    $"Http Request parsed is {JsonSerializer.Serialize(request, _serializerOptions)}");
-                var commandResponse = QueryDispatcher.Instance.Dispatch(() => command.CommandHandler(request));
-                while (commandResponse.Status == Status.PENDING)
-                {
-                    Thread.Sleep(25);
-                }
-
                 object? responseData;
 
-                if (commandResponse.Status is Status.FAILURE or Status.PENDING)
-                {
-                    Plugin.Logger?.LogError(
-                        $"Request with url '{context.Request.Url.ToString()}' failed with message : {commandResponse.Exception?.Message}");
+                var request = HttpRequestParser.ParseHttpRequest(context, command);
 
-                    if (commandResponse.Exception is HttpException httpException)
+                try
+                {
+                    if (command.IsProtected && request.user is not { IsAuthorized: true })
+                    {
+                        throw new HttpUnAuthorizeException();
+                    }
+
+                    var commandResponse = QueryDispatcher.Instance.Dispatch(() => command.CommandHandler(request));
+                    while (commandResponse.Status == Status.PENDING)
+                    {
+                        Thread.Sleep(25);
+                    }
+
+                    if (commandResponse.Status is Status.FAILURE or Status.PENDING)
+                    {
+                        if (commandResponse.Exception == null)
+                        {
+                            throw new RequestTimeout();
+                        }
+
+                        throw commandResponse.Exception;
+                    }
+
+                    responseData = commandResponse.Data;
+                }
+                catch (Exception e)
+                {
+                    ApiPlugin.Logger?.LogError(
+                        $"Request with url '{context.Request.Url.ToString()}' failed with message : {e.Message}");
+
+                    if (e is HttpException httpException)
                     {
                         context.Response.StatusCode = httpException.Status;
                         responseData =
@@ -82,18 +101,21 @@ public class ServerWebAPISystemPatches
                         responseData = new InternalServerError("about:blank", "Internal Server Error");
                     }
                 }
-                else
-                {
-                    responseData = commandResponse.Data;
-                }
 
                 context.Response.ContentType = MediaTypeNames.Application.Json;
 
                 var responseWriter = new StreamWriter(context.Response.OutputStream);
 
-                responseWriter.Write(JsonSerializer.Serialize(responseData, _serializerOptions));
+                responseWriter.Write(JsonSerializer.Serialize(responseData, SerializerOptions));
                 responseWriter.Flush();
             })
         )!;
+    }
+
+    private class RequestTimeout : HttpException
+    {
+        public RequestTimeout() : base(408, "Request Timeout")
+        {
+        }
     }
 }

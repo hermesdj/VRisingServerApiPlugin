@@ -20,19 +20,19 @@ public static class BodyParserUtils
     {
         if (body == null)
         {
-            Plugin.Logger?.LogWarning($"Provided body is null, cannot deserialize.");
+            ApiPlugin.Logger?.LogWarning($"Provided body is null, cannot deserialize.");
             return null;
         }
 
         try
         {
             var rawText = ((JsonDocument)body).RootElement.GetRawText();
-            Plugin.Logger?.LogDebug($"Deserializing to {typeof(T)} from body {rawText}");
+            ApiPlugin.Logger?.LogDebug($"Deserializing to {typeof(T)} from body {rawText}");
             return JsonSerializer.Deserialize<T>(rawText, SerializerOptions);
         }
         catch (JsonException ex)
         {
-            Plugin.Logger?.LogWarning($"Exception Deserializing from body : {ex.Message}");
+            ApiPlugin.Logger?.LogWarning($"Exception Deserializing from body : {ex.Message}");
             return null;
         }
     }
@@ -47,7 +47,7 @@ public static class BodyParserUtils
             }
             catch (JsonException ex)
             {
-                Plugin.Logger?.LogWarning($"Exception Deserializing from body : {ex.Message}");
+                ApiPlugin.Logger?.LogWarning($"Exception Deserializing from body : {ex.Message}");
                 return null;
             }
         }

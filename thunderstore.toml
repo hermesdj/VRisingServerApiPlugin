@@ -2,7 +2,7 @@
 schemaVersion = "0.0.1"
 
 [package]
-namespace = "hermesdj"
+namespace = "jays"
 name = "V Rising Http Api Plugin"
 versionNumber = "0.1.0"
 description = "Http Api plugin framework used to add new routes to a V Rising Server existing HTTP API"

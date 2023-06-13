@@ -9,6 +9,7 @@
     <LangVersion>latest</LangVersion>
     <RootNamespace>VRisingServerApiPlugin</RootNamespace>
     <Authors>jays</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <GamePath>C:\Users\Jérémy\Documents\GitHub\v-rising-server\server\bin</GamePath>
     <PluginsPath>$(GamePath)\BepInEx\plugins</PluginsPath>
@@ -24,6 +25,7 @@
   <ItemGroup>
     <Content Include=".github\workflows\build.yaml" />
     <Content Include=".github\workflows\release.yaml" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <Target Name="CopyDLLsToTargetServer" AfterTargets="Build">

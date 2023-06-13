@@ -1,0 +1,24 @@
+﻿<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>VRising.VRisingServerApiPlugin</id>
+        <title>VRising.VRisingServerApiPlugin</title>
+        <authors>hermesdj</authors>
+        <version>0.0.0.9999</version>
+        <owners>hermesdj</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>V Rising Mod for server HTTP API</description>
+        <icon>images\logo_256.png</icon>
+        <tags>VRising</tags>
+        <readme>README.md</readme>
+        <repository type="git" url="https://github.com/hermesdj/VRisingServerApiPlugin"/>
+        <dependencies>
+            <group targetFramework="net6.0"/>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Release\net6.0\*.*" target="lib\net6.0"/>
+        <file src="images\logo_256.png" target="images\"/>
+        <file src="README.md" target="README.md"/>
+    </files>
+</package>

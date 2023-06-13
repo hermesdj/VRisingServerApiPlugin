@@ -3,8 +3,8 @@ schemaVersion = "0.0.1"
 
 [package]
 namespace = "hermesdj"
-name = "VRising Http Api Plugin"
-versionNumber = "1.0.0"
+name = "V Rising Http Api Plugin"
+versionNumber = "0.1.0"
 description = "Http Api plugin framework used to add new routes to a V Rising Server existing HTTP API"
 websiteUrl = "https://github.com/hermesdj/VRisingServerApiPlugin"
 containsNsfwContent = false

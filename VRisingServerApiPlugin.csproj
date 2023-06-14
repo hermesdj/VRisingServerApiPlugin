@@ -23,9 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include=".github\release.yaml" />
-    <Content Include=".github\workflows\build.yaml" />
-    <Content Include=".github\workflows\release.yaml" />
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 

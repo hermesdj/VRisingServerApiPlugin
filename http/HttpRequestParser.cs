@@ -3,6 +3,7 @@ using System.Linq;
 using Il2CppSystem.Net;
 using Il2CppSystem.Security.Principal;
 using VRisingServerApiPlugin.command;
+using VRisingServerApiPlugin.http.security;
 
 namespace VRisingServerApiPlugin.http;
 
@@ -64,7 +65,7 @@ public static class HttpRequestParser
         var username = identity.Name;
         var password = identity.password;
 
-        var isAuthorized = ApiPlugin.Instance.CheckAuthenticationOfUser(username, password);
+        var isAuthorized = HttpSecuritySingleton.GetInstance().CheckAuthenticationOfUser(username, password);
 
         return new AuthenticatedUser(Username: identity.Name, Password: identity.password,
             IsAuthorized: isAuthorized);

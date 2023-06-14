@@ -1,15 +1,13 @@
 ﻿#nullable enable
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using UnityEngine;
 using VRisingServerApiPlugin.command;
+using VRisingServerApiPlugin.http.security;
 using VRisingServerApiPlugin.query;
 
 namespace VRisingServerApiPlugin;
@@ -25,15 +23,15 @@ public class ApiPlugin : BasePlugin
     public static ApiPlugin Instance { get; private set; }
 #nullable enable
 
-    private ConfigEntry<string> _authorizedUsers;
-
     public ApiPlugin() : base()
     {
         Instance = this;
         Logger = Log;
 
-        _authorizedUsers = Config.Bind("Authentication", "AuthorizedUsers", "",
+        var authorizedUsers = Config.Bind("Authentication", "AuthorizedUsers", "",
             "A list of comma separated username:password entries that defines the accounts allowed to query the API");
+        
+        HttpSecuritySingleton.GetInstance().Initialize(authorizedUsers);
     }
 
     public override void Load()
@@ -64,37 +62,5 @@ public class ApiPlugin : BasePlugin
         }
 
         return true;
-    }
-
-    public List<AuthorizedUser> GetAuthorizedUserList()
-    {
-        return AuthorizedUser.ParseConfig(this._authorizedUsers.Value);
-    }
-
-    public bool CheckAuthenticationOfUser(string username, string password)
-    {
-        return GetAuthorizedUserList()
-            .Count(user => user.Username.Equals(username) && user.Password.Equals(password)) == 1;
-    }
-
-    public class AuthorizedUser
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
-
-        private AuthorizedUser(string username, string password)
-        {
-            Username = username;
-            Password = password;
-        }
-
-        public static List<AuthorizedUser> ParseConfig(string authorizedUsers)
-        {
-            return (from user in authorizedUsers.Split(",")
-                select user.Split(':')
-                into parts
-                where parts.Length == 2
-                select new AuthorizedUser(parts[0].Trim(), parts[1].Trim())).ToList();
-        }
     }
 }

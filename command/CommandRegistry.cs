@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Serialization;
 using VRisingServerApiPlugin.attributes;
 using VRisingServerApiPlugin.attributes.methods;
 using VRisingServerApiPlugin.attributes.parameters;
@@ -118,16 +119,24 @@ public static class CommandRegistry
         };
     }
 
-    private static object? ParseUrlOrQueryArg(Dictionary<string, string> dictionary, string name,
+    private static object? ParseUrlOrQueryArg(IReadOnlyDictionary<string, string> dictionary, string name,
         ParameterInfo parameter)
     {
-        var result = parameter.DefaultValue;
-
-        if (dictionary.TryGetValue(name, out var value))
+        if (!dictionary.TryGetValue(name, out var value)) return parameter.DefaultValue;
+        
+        object? result;
+        
+        if (parameter.ParameterType == typeof(System.Guid))
         {
-            result = parameter.ParameterType == typeof(Guid)
-                ? Guid.Parse(value)
-                : Convert.ChangeType(value, parameter.ParameterType);
+            result = System.Guid.Parse(value);
+        }
+        else if (parameter.ParameterType == typeof(Guid))
+        {
+            result = Guid.Parse(value);
+        }
+        else
+        {
+            result = Convert.ChangeType(value, parameter.ParameterType);
         }
 
         return result;

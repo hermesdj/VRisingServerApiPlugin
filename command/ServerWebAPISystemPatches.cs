@@ -40,7 +40,7 @@ public class ServerWebAPISystemPatches
 
         foreach (var command in CommandRegistry.GetCommands())
         {
-            ApiPlugin.Logger?.LogInfo($"Registering route with pattern {command.Pattern}");
+            ApiPlugin.Logger?.LogInfo($"Registering route with pattern {command.Method} {command.Pattern}");
             __instance._HttpReceiveService.AddRoute(new HttpServiceReceiveThread.Route(
                 new Regex(command.Pattern),
                 command.Method,

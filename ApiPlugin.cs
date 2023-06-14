@@ -23,14 +23,14 @@ public class ApiPlugin : BasePlugin
     public static ApiPlugin Instance { get; private set; }
 #nullable enable
 
-    public ApiPlugin() : base()
+    public ApiPlugin()
     {
         Instance = this;
         Logger = Log;
 
-        var authorizedUsers = Config.Bind("Authentication", "AuthorizedUsers", "",
+        var authorizedUsers = Config.Bind<string>("Authentication", "AuthorizedUsers", "",
             "A list of comma separated username:password entries that defines the accounts allowed to query the API");
-        
+
         HttpSecuritySingleton.GetInstance().Initialize(authorizedUsers);
     }
 

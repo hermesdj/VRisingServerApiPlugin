@@ -26,9 +26,9 @@ public static class HttpRequestParser
 
         if (command.Method == "GET")
             return new HttpRequest(
-                queryParams: QueryParamUtils.ParseQueryString(request.url.Query)
+                queryParams: ParamUtils.ParseQueryString(request.url.Query)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-                urlParams: QueryParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern)
+                urlParams: ParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern)
                     .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
                 url: request.raw_url,
                 body: body,
@@ -40,9 +40,9 @@ public static class HttpRequestParser
         body = inputStream.ReadToEnd();
 
         return new HttpRequest(
-            queryParams: QueryParamUtils.ParseQueryString(request.url.Query)
+            queryParams: ParamUtils.ParseQueryString(request.url.Query)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
-            urlParams: QueryParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern)
+            urlParams: ParamUtils.ParseQueryString(request.url.LocalPath, command.Pattern)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
             url: request.raw_url,
             body: body,

@@ -28,7 +28,7 @@ public class PlayersEndpoints
         return new PlayerListApiResponse(players);
     }
 
-    [HttpGet("/(?<id>[0-9]*)")]
+    [HttpGet("/{id}")]
     public PlayerApiResponse GetPlayerDetails([UrlParam("id")] int userIndex)
     {
         var player = ServerWorld.GetPlayer(userIndex);

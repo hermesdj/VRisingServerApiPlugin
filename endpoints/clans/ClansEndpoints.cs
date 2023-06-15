@@ -24,14 +24,14 @@ public class ClansEndpoints
         );
     }
 
-    [HttpGet(@"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})")]
+    [HttpGet(@"/{id}")]
     public GetClanResponse GetClanById([UrlParam("id")] Guid clanId)
     {
         var clan = ClanUtils.GetClanById(clanId);
         return new GetClanResponse(clan.HasValue ? ClanUtils.Convert(clan.Value) : null);
     }
 
-    [HttpGet(@"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/players")]
+    [HttpGet(@"/{id}/players")]
     public ListClanPlayersResponse GetClanPlayers([UrlParam("id")] Guid clanId)
     {
         ClanTeam? clan = ServerWorld.GetAllClans()
@@ -42,7 +42,7 @@ public class ClansEndpoints
     }
 
     [HttpPost(pattern:
-        @"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/updateName",
+        @"/{id}/updateName",
         isProtected: true)]
     public GetClanResponse UpdateClanName([UrlParam("id")] Guid clanId, [RequestBody] UpdateClanNameBody? body)
     {
@@ -71,7 +71,7 @@ public class ClansEndpoints
     }
 
     [HttpPost(pattern:
-        @"/(?<id>[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12})/updateMotto",
+        @"/{id}/updateMotto",
         isProtected: true)]
     public GetClanResponse UpdateClanMotto([UrlParam("id")] Guid clanId, [RequestBody] UpdateClanMottoBody? body)
     {
